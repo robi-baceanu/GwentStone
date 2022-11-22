@@ -1,6 +1,9 @@
 package implementation.environmentCards;
 
+import implementation.Card;
 import implementation.Environment;
+import implementation.Game;
+import implementation.Minion;
 
 import java.util.ArrayList;
 
@@ -13,7 +16,11 @@ public class Winterfell extends Environment {
     }
 
     @Override
-    public void useEnvironmentAbility(int affectedRow) {
-
+    public void useEnvironmentAbility(Game game, int affectedRow) {
+        if (game.gameTable[affectedRow] != null) {
+            for (Card card : game.gameTable[affectedRow]) {
+                ((Minion) card).setFrozen(true);
+            }
+        }
     }
 }

@@ -1,6 +1,10 @@
 package implementation.environmentCards;
 
+import fileio.Coordinates;
+import implementation.Card;
 import implementation.Environment;
+import implementation.Game;
+import implementation.Minion;
 
 import java.util.ArrayList;
 
@@ -13,7 +17,22 @@ public class HeartHound extends Environment {
     }
 
     @Override
-    public void useEnvironmentAbility(int affectedRow) {
+    public void useEnvironmentAbility(Game game, int affectedRow) {
+        int maxHealth = 0;
+        Card cardToSteal = null;
 
+        if (game.gameTable[affectedRow] != null) {
+            for (Card card : game.gameTable[affectedRow]) {
+                if (((Minion) card).getHealth() > maxHealth) {
+                    maxHealth = ((Minion) card).getHealth();
+                    cardToSteal = card;
+                }
+            }
+
+            if (cardToSteal != null) {
+                game.gameTable[3 - affectedRow].add(cardToSteal);
+                game.gameTable[affectedRow].remove(cardToSteal);
+            }
+        }
     }
 }

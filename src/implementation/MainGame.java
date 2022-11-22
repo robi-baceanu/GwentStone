@@ -52,14 +52,31 @@ public class MainGame {
                 ActionsInput currentAction = currentGame.getActions().get(j);
 
                 switch (currentAction.getCommand()) {
-                    case "getPlayerDeck" -> CommandsParser.getPlayerDeck(game, currentAction.getPlayerIdx(), output);
-                    case "getCardsInHand" -> CommandsParser.getCardsInHand(game, currentAction.getPlayerIdx(), output);
-                    case "getPlayerHero" -> CommandsParser.getPlayerHero(game, currentAction.getPlayerIdx(), output);
-                    case "getPlayerTurn" -> CommandsParser.getPlayerTurn(game, output);
-                    case "endPlayerTurn" -> CommandsParser.endPlayerTurn(game, currentGame.getStartGame().getStartingPlayer());
-                    case "getPlayerMana" -> CommandsParser.getPlayerMana(game, currentAction.getPlayerIdx(), output);
-                    case "placeCard" -> CommandsParser.placeCard(game, game.getActivePlayer(), currentAction.getHandIdx(), output);
-                    case "getCardsOnTable" -> CommandsParser.getCardsOnTable(game, output);
+                    case "getPlayerDeck" ->
+                            CommandsParser.getPlayerDeck(game, currentAction.getPlayerIdx(), output);
+                    case "getCardsInHand" ->
+                            CommandsParser.getCardsInHand(game, currentAction.getPlayerIdx(), output);
+                    case "getPlayerHero" ->
+                            CommandsParser.getPlayerHero(game, currentAction.getPlayerIdx(), output);
+                    case "getPlayerTurn" ->
+                            CommandsParser.getPlayerTurn(game, output);
+                    case "endPlayerTurn" ->
+                            CommandsParser.endPlayerTurn(game, currentGame.getStartGame().getStartingPlayer());
+                    case "getPlayerMana" ->
+                            CommandsParser.getPlayerMana(game, currentAction.getPlayerIdx(), output);
+                    case "placeCard" ->
+                            CommandsParser.placeCard(game, game.getActivePlayer(), currentAction.getHandIdx(), output);
+                    case "getCardsOnTable" ->
+                            CommandsParser.getCardsOnTable(game, output);
+                    case "useEnvironmentCard" ->
+                            CommandsParser.useEnvironmentCard(game, game.getActivePlayer(), currentAction.getHandIdx(),
+                                    currentAction.getAffectedRow(), output);
+                    case "getEnvironmentCardsInHand" ->
+                            CommandsParser.getEnvironmentCardsInHand(game, currentAction.getPlayerIdx(), output);
+                    case "getCardAtPosition" ->
+                            CommandsParser.getCardAtPosition(game, currentAction.getX(), currentAction.getY(), output);
+                    case "getFrozenCardsOnTable" ->
+                            CommandsParser.getFrozenCardsOnTable(game, output);
                 }
             }
         }

@@ -1,11 +1,21 @@
 package implementation;
 
+import fileio.Coordinates;
+
+import java.util.ArrayList;
+
 public class Game {
     private final Player playerOne = new Player();
     private final Player playerTwo = new Player();
     private int activePlayer;
     private int round = 1;
-    public Card[][] gameTable = new Card[4][5];
+    public ArrayList<Card>[] gameTable = new ArrayList[4];
+
+    public Game() {
+        for (int i = 0; i < 4; i++) {
+            gameTable[i] = new ArrayList<Card>();
+        }
+    }
 
     public Player getPlayerOne() {
         return playerOne;
