@@ -17,10 +17,8 @@ public class Winterfell extends Environment {
 
     @Override
     public void useEnvironmentAbility(Game game, int affectedRow) {
-        if (game.gameTable[affectedRow] != null) {
-            for (Card card : game.gameTable[affectedRow]) {
-                ((Minion) card).setFrozen(true);
-            }
+        for (Card card : game.gameTable[affectedRow]) {
+            ((Minion) card).setFrozen(true);
         }
     }
 }

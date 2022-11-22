@@ -21,18 +21,16 @@ public class HeartHound extends Environment {
         int maxHealth = 0;
         Card cardToSteal = null;
 
-        if (game.gameTable[affectedRow] != null) {
-            for (Card card : game.gameTable[affectedRow]) {
-                if (((Minion) card).getHealth() > maxHealth) {
-                    maxHealth = ((Minion) card).getHealth();
-                    cardToSteal = card;
-                }
+        for (Card card : game.gameTable[affectedRow]) {
+            if (((Minion) card).getHealth() > maxHealth) {
+                maxHealth = ((Minion) card).getHealth();
+                cardToSteal = card;
             }
+        }
 
-            if (cardToSteal != null) {
-                game.gameTable[3 - affectedRow].add(cardToSteal);
-                game.gameTable[affectedRow].remove(cardToSteal);
-            }
+        if (cardToSteal != null) {
+            game.gameTable[3 - affectedRow].add(cardToSteal);
+            game.gameTable[affectedRow].remove(cardToSteal);
         }
     }
 }

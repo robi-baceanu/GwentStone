@@ -18,11 +18,9 @@ public class Firestorm extends Environment {
 
     @Override
     public void useEnvironmentAbility(Game game, int affectedRow) {
-        if (game.gameTable[affectedRow] != null) {
-            for (Card card : game.gameTable[affectedRow]) {
-                ((Minion) card).setHealth(((Minion) card).getHealth() - 1);
-            }
-            game.gameTable[affectedRow].removeIf(card -> ((Minion) card).getHealth() <= 0);
+        for (Card card : game.gameTable[affectedRow]) {
+            ((Minion) card).setHealth(((Minion) card).getHealth() - 1);
         }
+        game.gameTable[affectedRow].removeIf(card -> ((Minion) card).getHealth() <= 0);
     }
 }
