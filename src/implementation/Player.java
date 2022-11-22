@@ -17,6 +17,7 @@ public class Player {
     private final ArrayList<Card> playerDeck = new ArrayList<Card>();
     private final ArrayList<Card> playerHand = new ArrayList<Card>();
     private Hero playerHero;
+    private int mana;
 
     public ArrayList<Card> getPlayerDeck() {
         return playerDeck;
@@ -32,6 +33,14 @@ public class Player {
 
     public void setPlayerHero(Hero playerHero) {
         this.playerHero = playerHero;
+    }
+
+    public int getMana() {
+        return mana;
+    }
+
+    public void setMana(int mana) {
+        this.mana = mana;
     }
 
     public void assignPlayerDeck(int player, int gameNumber) {
@@ -119,7 +128,9 @@ public class Player {
     }
 
     public void drawCardFromDeck() {
-        playerHand.add(playerDeck.get(0));
-        playerDeck.remove(0);
+        if (!playerDeck.isEmpty()) {
+            playerHand.add(playerDeck.get(0));
+            playerDeck.remove(0);
+        }
     }
 }

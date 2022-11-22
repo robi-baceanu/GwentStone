@@ -45,13 +45,21 @@ public class MainGame {
             game.getPlayerOne().drawCardFromDeck();
             game.getPlayerTwo().drawCardFromDeck();
 
+            game.getPlayerOne().setMana(game.getPlayerOne().getMana() + Math.min(game.getRound(), 10));
+            game.getPlayerTwo().setMana(game.getPlayerTwo().getMana() + Math.min(game.getRound(), 10));
+
             for (int j = 0; j < currentGame.getActions().size(); j++) {
                 ActionsInput currentAction = currentGame.getActions().get(j);
 
                 switch (currentAction.getCommand()) {
                     case "getPlayerDeck" -> CommandsParser.getPlayerDeck(game, currentAction.getPlayerIdx(), output);
+                    case "getCardsInHand" -> CommandsParser.getCardsInHand(game, currentAction.getPlayerIdx(), output);
                     case "getPlayerHero" -> CommandsParser.getPlayerHero(game, currentAction.getPlayerIdx(), output);
                     case "getPlayerTurn" -> CommandsParser.getPlayerTurn(game, output);
+                    case "endPlayerTurn" -> CommandsParser.endPlayerTurn(game, currentGame.getStartGame().getStartingPlayer());
+                    case "getPlayerMana" -> CommandsParser.getPlayerMana(game, currentAction.getPlayerIdx(), output);
+                    case "placeCard" -> CommandsParser.placeCard(game, game.getActivePlayer(), currentAction.getHandIdx(), output);
+                    case "getCardsOnTable" -> CommandsParser.getCardsOnTable(game, output);
                 }
             }
         }
