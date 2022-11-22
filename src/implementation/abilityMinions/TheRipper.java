@@ -15,6 +15,7 @@ public class TheRipper extends Minion {
         this.setName(name);
         this.setTank(false);
         this.setFrozen(false);
+        this.setHasAttacked(false);
     }
 
     public void useMinionAbility(Coordinates cardAttacked) {}

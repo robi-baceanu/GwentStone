@@ -3,6 +3,7 @@ package implementation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import fileio.Coordinates;
 import implementation.abilityMinions.Miraj;
 import implementation.abilityMinions.TheRipper;
 import implementation.environmentCards.HeartHound;
@@ -150,12 +151,14 @@ public class CommandsParser {
         if (game.gameTable[frontRow] != null) {
             for (Card card : game.gameTable[frontRow]) {
                 ((Minion) card).setFrozen(false);
+                ((Minion) card).setHasAttacked(false);
             }
         }
 
         if (game.gameTable[backRow] != null) {
             for (Card card : game.gameTable[backRow]) {
                 ((Minion) card).setFrozen(false);
+                ((Minion) card).setHasAttacked(false);
             }
         }
 
@@ -420,4 +423,59 @@ public class CommandsParser {
         output.add(toSend);
     }
 
+    public static void cardUsesAttack(Game game, Coordinates attackerCoordinates, Coordinates attackedCoordinates, ArrayNode output) {
+        Card cardAttacker = game.gameTable[attackerCoordinates.getX()].get(attackerCoordinates.getY());
+        Card cardAttacked = game.gameTable[attackedCoordinates.getX()].get(attackedCoordinates.getY());
+
+        ObjectNode nodeAttacker = objectMapper.createObjectNode();
+        nodeAttacker.put("x", attackerCoordinates.getX());
+        nodeAttacker.put("y", attackerCoordinates.getY());
+
+        ObjectNode nodeAttacked = objectMapper.createObjectNode();
+        nodeAttacked.put("x", attackedCoordinates.getX());
+        nodeAttacked.put("y", attackedCoordinates.getY());
+
+        ObjectNode toSend = objectMapper.createObjectNode();
+        toSend.put("command", "cardUsesAttack");
+        toSend.set("cardAttacker", nodeAttacker);
+        toSend.set("cardAttacked", nodeAttacked);
+
+        boolean tankExists = false;
+        int lookForTankRow = attackedCoordinates.getX();
+        if (lookForTankRow == 0) {
+            lookForTankRow = 1;
+        } else if (lookForTankRow == 3) {
+            lookForTankRow = 2;
+        }
+        for (Card card : game.gameTable[lookForTankRow]) {
+            if (((Minion) card).isTank()) {
+                tankExists = true;
+                break;
+            }
+        }
+
+        if (((attackerCoordinates.getX() == 1 || attackerCoordinates.getX() == 0) &&
+                (attackedCoordinates.getX() == 1 || attackedCoordinates.getX() == 0)) ||
+                ((attackerCoordinates.getX() == 2 || attackerCoordinates.getX() == 3) &&
+                (attackedCoordinates.getX() == 2 || attackedCoordinates.getX() == 3))) {
+            toSend.put("error", "Attacked card does not belong to the enemy.");
+            output.add(toSend);
+        } else if (((Minion) cardAttacker).hasAttacked()) {
+            toSend.put("error", "Attacker card has already attacked this turn.");
+            output.add(toSend);
+        } else if (((Minion) cardAttacker).isFrozen()) {
+            toSend.put("error", "Attacker card is frozen.");
+            output.add(toSend);
+        } else if (tankExists && !((Minion) cardAttacked).isTank()) {
+            toSend.put("error", "Attacked card is not of type 'Tank'.");
+            output.add(toSend);
+        } else {
+            ((Minion) cardAttacked).setHealth(((Minion) cardAttacked).getHealth() - ((Minion) cardAttacker).getAttackDamage());
+            if (((Minion) cardAttacked).getHealth() <= 0) {
+                game.gameTable[attackedCoordinates.getX()].remove(cardAttacked);
+            }
+
+            ((Minion) cardAttacker).setHasAttacked(true);
+        }
+    }
 }

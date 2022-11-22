@@ -7,6 +7,7 @@ public class Minion extends Card {
     private int attackDamage;
     private boolean isTank;
     private boolean isFrozen;
+    private boolean hasAttacked;
 
     public int getHealth() {
         return health;
@@ -38,5 +39,13 @@ public class Minion extends Card {
 
     public void setFrozen(boolean frozen) {
         isFrozen = frozen;
+    }
+
+    public boolean hasAttacked() {
+        return hasAttacked;
+    }
+
+    public void setHasAttacked(boolean hasAttacked) {
+        this.hasAttacked = hasAttacked;
     }
 }

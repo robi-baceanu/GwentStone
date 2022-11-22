@@ -14,5 +14,6 @@ public class Sentinel extends Minion {
         this.setName(name);
         this.setTank(false);
         this.setFrozen(false);
+        this.setHasAttacked(false);
     }
 }

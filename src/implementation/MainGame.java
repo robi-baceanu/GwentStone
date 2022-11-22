@@ -77,6 +77,9 @@ public class MainGame {
                             CommandsParser.getCardAtPosition(game, currentAction.getX(), currentAction.getY(), output);
                     case "getFrozenCardsOnTable" ->
                             CommandsParser.getFrozenCardsOnTable(game, output);
+                    case "cardUsesAttack" ->
+                            CommandsParser.cardUsesAttack(game, currentAction.getCardAttacker(),
+                                    currentAction.getCardAttacked(), output);
                 }
             }
         }

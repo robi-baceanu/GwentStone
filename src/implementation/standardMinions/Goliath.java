@@ -14,5 +14,6 @@ public class Goliath extends Minion {
         this.setName(name);
         this.setTank(true);
         this.setFrozen(false);
+        this.setHasAttacked(false);
     }
 }
