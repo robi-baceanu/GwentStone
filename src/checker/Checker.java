@@ -17,7 +17,6 @@ public final class Checker {
     private static int gitScore;
     private static int readmeScore;
     private static int totalScore = 0;
-
     private Checker() {
     }
 
@@ -80,7 +79,6 @@ public final class Checker {
 
     /**
      * This method is used to calculate score of implementation
-     *
      * 18 tests (80 points maximum)
      */
     private static void calculateScoreAllTests() throws IOException {
