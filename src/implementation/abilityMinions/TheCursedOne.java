@@ -29,7 +29,7 @@ public final class TheCursedOne extends AbilityMinion {
     /**
      * <strong>Shapeshift:</strong>
      * Swaps an opponent minion's health with its attack damage.
-     * If such, health becomes 0, card is removed from the table.
+     * If by doing so, health becomes 0, card is removed from the table.
      *
      * @param game Current game that is being played.
      * @param cardAttacked Coordinates of card targeted by the Minion.
