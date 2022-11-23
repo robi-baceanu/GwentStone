@@ -606,12 +606,15 @@ public class CommandsParser {
 
             if (enemyHero.getHealth() <= 0) {
                 game.setGameEnded(true);
+                MainGame.getInstance().setTotalGamesPlayed(MainGame.getInstance().getTotalGamesPlayed() + 1);
 
                 ObjectNode victoryNode = objectMapper.createObjectNode();
                 if (attackerCoordinates.getX() == 0 || attackerCoordinates.getX() == 1) {
                     victoryNode.put("gameEnded", "Player two killed the enemy hero.");
+                    MainGame.getInstance().setPlayerTwoWins(MainGame.getInstance().getPlayerTwoWins() + 1);
                 } else {
                     victoryNode.put("gameEnded", "Player one killed the enemy hero.");
+                    MainGame.getInstance().setPlayerOneWins(MainGame.getInstance().getPlayerOneWins() + 1);
                 }
                 output.add(victoryNode);
             }
@@ -661,5 +664,26 @@ public class CommandsParser {
                 currentPLayer.setMana(currentPLayer.getMana() - currentHero.getMana());
             }
         }
+    }
+
+    public static void getTotalGamesPlayed(ArrayNode output) {
+        ObjectNode toSend = objectMapper.createObjectNode();
+        toSend.put("command", "getTotalGamesPlayed");
+        toSend.put("output", MainGame.getInstance().getTotalGamesPlayed());
+        output.add(toSend);
+    }
+
+    public static void getPlayerOneWins(ArrayNode output) {
+        ObjectNode toSend = objectMapper.createObjectNode();
+        toSend.put("command", "getPlayerOneWins");
+        toSend.put("output", MainGame.getInstance().getPlayerOneWins());
+        output.add(toSend);
+    }
+
+    public static void getPlayerTwoWins(ArrayNode output) {
+        ObjectNode toSend = objectMapper.createObjectNode();
+        toSend.put("command", "getPlayerTwoWins");
+        toSend.put("output", MainGame.getInstance().getPlayerTwoWins());
+        output.add(toSend);
     }
 }

@@ -9,6 +9,10 @@ public class MainGame {
     private static MainGame match = null;
     private Input inputData;
 
+    private int totalGamesPlayed;
+    private int playerOneWins;
+    private int playerTwoWins;
+
     private MainGame() {}
 
     public static MainGame getInstance() {
@@ -26,8 +30,37 @@ public class MainGame {
         this.inputData = inputData;
     }
 
+    public int getTotalGamesPlayed() {
+        return totalGamesPlayed;
+    }
+
+    public void setTotalGamesPlayed(int totalGamesPlayed) {
+        this.totalGamesPlayed = totalGamesPlayed;
+    }
+
+    public int getPlayerOneWins() {
+        return playerOneWins;
+    }
+
+    public void setPlayerOneWins(int playerOneWins) {
+        this.playerOneWins = playerOneWins;
+    }
+
+    public int getPlayerTwoWins() {
+        return playerTwoWins;
+    }
+
+    public void setPlayerTwoWins(int playerTwoWins) {
+        this.playerTwoWins = playerTwoWins;
+    }
+
     public static void startMatch(ArrayNode output) {
         int gamesNumber = getInstance().inputData.getGames().size();
+
+        MainGame.getInstance().setTotalGamesPlayed(0);
+        MainGame.getInstance().setPlayerOneWins(0);
+        MainGame.getInstance().setPlayerTwoWins(0);
+
 
         for (int i = 0; i < gamesNumber; i++) {
             GameInput currentGame = getInstance().inputData.getGames().get(i);
@@ -116,6 +149,15 @@ public class MainGame {
                         if (!game.isGameEnded()) {
                             CommandsParser.useHeroAbility(game, currentAction.getAffectedRow(), output);
                         }
+                        break;
+                    case "getPlayerOneWins":
+                        CommandsParser.getPlayerOneWins(output);
+                        break;
+                    case "getPlayerTwoWins":
+                        CommandsParser.getPlayerTwoWins(output);
+                        break;
+                    case "getTotalGamesPlayed":
+                        CommandsParser.getTotalGamesPlayed(output);
                         break;
                 }
             }
