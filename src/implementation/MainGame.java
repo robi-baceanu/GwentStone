@@ -52,37 +52,66 @@ public class MainGame {
                 ActionsInput currentAction = currentGame.getActions().get(j);
 
                 switch (currentAction.getCommand()) {
-                    case "getPlayerDeck" ->
-                            CommandsParser.getPlayerDeck(game, currentAction.getPlayerIdx(), output);
-                    case "getCardsInHand" ->
-                            CommandsParser.getCardsInHand(game, currentAction.getPlayerIdx(), output);
-                    case "getPlayerHero" ->
-                            CommandsParser.getPlayerHero(game, currentAction.getPlayerIdx(), output);
-                    case "getPlayerTurn" ->
-                            CommandsParser.getPlayerTurn(game, output);
-                    case "endPlayerTurn" ->
+                    case "getPlayerDeck":
+                        CommandsParser.getPlayerDeck(game, currentAction.getPlayerIdx(), output);
+                        break;
+                    case "getCardsInHand":
+                        CommandsParser.getCardsInHand(game, currentAction.getPlayerIdx(), output);
+                        break;
+                    case "getPlayerHero":
+                        CommandsParser.getPlayerHero(game, currentAction.getPlayerIdx(), output);
+                        break;
+                    case "getPlayerTurn":
+                        CommandsParser.getPlayerTurn(game, output);
+                        break;
+                    case "endPlayerTurn":
+                        if (!game.isGameEnded()) {
                             CommandsParser.endPlayerTurn(game, currentGame.getStartGame().getStartingPlayer());
-                    case "getPlayerMana" ->
-                            CommandsParser.getPlayerMana(game, currentAction.getPlayerIdx(), output);
-                    case "placeCard" ->
+                        }
+                        break;
+                    case "getPlayerMana":
+                        CommandsParser.getPlayerMana(game, currentAction.getPlayerIdx(), output);
+                        break;
+                    case "placeCard":
+                        if (!game.isGameEnded()) {
                             CommandsParser.placeCard(game, game.getActivePlayer(), currentAction.getHandIdx(), output);
-                    case "getCardsOnTable" ->
-                            CommandsParser.getCardsOnTable(game, output);
-                    case "useEnvironmentCard" ->
+                        }
+                        break;
+                    case "getCardsOnTable":
+                        CommandsParser.getCardsOnTable(game, output);
+                        break;
+                    case "useEnvironmentCard":
+                        if (!game.isGameEnded()) {
                             CommandsParser.useEnvironmentCard(game, game.getActivePlayer(), currentAction.getHandIdx(),
                                     currentAction.getAffectedRow(), output);
-                    case "getEnvironmentCardsInHand" ->
-                            CommandsParser.getEnvironmentCardsInHand(game, currentAction.getPlayerIdx(), output);
-                    case "getCardAtPosition" ->
-                            CommandsParser.getCardAtPosition(game, currentAction.getX(), currentAction.getY(), output);
-                    case "getFrozenCardsOnTable" ->
-                            CommandsParser.getFrozenCardsOnTable(game, output);
-                    case "cardUsesAttack" ->
+                        }
+                        break;
+                    case "getEnvironmentCardsInHand":
+                        CommandsParser.getEnvironmentCardsInHand(game, currentAction.getPlayerIdx(), output);
+                        break;
+                    case "getCardAtPosition":
+                        CommandsParser.getCardAtPosition(game, currentAction.getX(), currentAction.getY(), output);
+                        break;
+                    case "getFrozenCardsOnTable":
+                        CommandsParser.getFrozenCardsOnTable(game, output);
+                        break;
+                    case "cardUsesAttack":
+                        if (!game.isGameEnded()) {
                             CommandsParser.cardUsesAttack(game, currentAction.getCardAttacker(),
                                     currentAction.getCardAttacked(), output);
-                    case "cardUsesAbility" ->
+                        }
+                        break;
+                    case "cardUsesAbility":
+                        if (!game.isGameEnded()) {
                             CommandsParser.cardUsesAbility(game, currentAction.getCardAttacker(),
                                     currentAction.getCardAttacked(), output);
+                        }
+                        break;
+                    case "useAttackHero":
+                        if (!game.isGameEnded()) {
+                            CommandsParser.useAttackHero(game, currentAction.getCardAttacker(), output);
+                        }
+                        break;
                 }
             }
         }

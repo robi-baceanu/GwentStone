@@ -548,4 +548,64 @@ public class CommandsParser {
             }
         }
     }
+
+    public static void useAttackHero(Game game, Coordinates attackerCoordinates, ArrayNode output) {
+        Hero enemyHero;
+
+        if (attackerCoordinates.getX() == 0 || attackerCoordinates.getX() == 1) {
+            enemyHero = game.getPlayerOne().getPlayerHero();
+        } else {
+            enemyHero = game.getPlayerTwo().getPlayerHero();
+        }
+
+        Card cardAttacker = game.gameTable[attackerCoordinates.getX()].get(attackerCoordinates.getY());
+
+        ObjectNode nodeAttacker = objectMapper.createObjectNode();
+        nodeAttacker.put("x", attackerCoordinates.getX());
+        nodeAttacker.put("y", attackerCoordinates.getY());
+
+        ObjectNode toSend = objectMapper.createObjectNode();
+        toSend.put("command", "useAttackHero");
+        toSend.set("cardAttacker", nodeAttacker);
+
+        boolean tankExists = false;
+        int lookForTankRow;
+        if (attackerCoordinates.getX() == 0 || attackerCoordinates.getX() == 1) {
+            lookForTankRow = 2;
+        } else {
+            lookForTankRow = 1;
+        }
+        for (Card card : game.gameTable[lookForTankRow]) {
+            if (((Minion) card).isTank()) {
+                tankExists = true;
+                break;
+            }
+        }
+
+        if (((Minion) cardAttacker).isFrozen()) {
+            toSend.put("error", "Attacker card is frozen.");
+            output.add(toSend);
+        } else if (((Minion) cardAttacker).hasAttacked()) {
+            toSend.put("error", "Attacker card has already attacked this turn.");
+            output.add(toSend);
+        } else if (tankExists) {
+            toSend.put("error", "Attacked card is not of type 'Tank'.");
+            output.add(toSend);
+        } else {
+            enemyHero.setHealth(enemyHero.getHealth() - ((Minion) cardAttacker).getAttackDamage());
+            ((Minion) cardAttacker).setHasAttacked(true);
+
+            if (enemyHero.getHealth() <= 0) {
+                game.setGameEnded(true);
+
+                ObjectNode victoryNode = objectMapper.createObjectNode();
+                if (attackerCoordinates.getX() == 0 || attackerCoordinates.getX() == 1) {
+                    victoryNode.put("gameEnded", "Player two killed the enemy hero.");
+                } else {
+                    victoryNode.put("gameEnded", "Player one killed the enemy hero.");
+                }
+                output.add(victoryNode);
+            }
+        }
+    }
 }
