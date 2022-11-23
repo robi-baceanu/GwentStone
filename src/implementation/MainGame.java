@@ -112,6 +112,11 @@ public class MainGame {
                             CommandsParser.useAttackHero(game, currentAction.getCardAttacker(), output);
                         }
                         break;
+                    case "useHeroAbility":
+                        if (!game.isGameEnded()) {
+                            CommandsParser.useHeroAbility(game, currentAction.getAffectedRow(), output);
+                        }
+                        break;
                 }
             }
         }

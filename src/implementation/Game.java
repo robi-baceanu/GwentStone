@@ -1,7 +1,5 @@
 package implementation;
 
-import fileio.Coordinates;
-
 import java.util.ArrayList;
 
 public class Game {

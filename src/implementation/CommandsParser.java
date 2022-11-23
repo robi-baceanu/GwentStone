@@ -9,6 +9,10 @@ import implementation.abilityMinions.Miraj;
 import implementation.abilityMinions.TheCursedOne;
 import implementation.abilityMinions.TheRipper;
 import implementation.environmentCards.HeartHound;
+import implementation.heroCards.EmpressThorina;
+import implementation.heroCards.GeneralKocioraw;
+import implementation.heroCards.KingMudface;
+import implementation.heroCards.LordRoyce;
 import implementation.standardMinions.Goliath;
 import implementation.standardMinions.Warden;
 
@@ -139,13 +143,16 @@ public class CommandsParser {
 
     public static void endPlayerTurn(Game game, int startingPlayer) {
         int activePlayer = game.getActivePlayer();
+        Hero activePlayerHero;
         int frontRow;
         int backRow;
 
         if (activePlayer == 1) {
+            activePlayerHero = game.getPlayerOne().getPlayerHero();
             frontRow = 2;
             backRow = 3;
         } else {
+            activePlayerHero = game.getPlayerTwo().getPlayerHero();
             frontRow = 1;
             backRow = 0;
         }
@@ -163,6 +170,8 @@ public class CommandsParser {
                 ((Minion) card).setHasAttacked(false);
             }
         }
+
+        activePlayerHero.setHasAttacked(false);
 
         game.setActivePlayer(3 - game.getActivePlayer());
         if (game.getActivePlayer() == startingPlayer) {
@@ -605,6 +614,51 @@ public class CommandsParser {
                     victoryNode.put("gameEnded", "Player one killed the enemy hero.");
                 }
                 output.add(victoryNode);
+            }
+        }
+    }
+
+    public static void useHeroAbility(Game game, int affectedRow, ArrayNode output) {
+        int activePlayer = game.getActivePlayer();
+        Player currentPLayer;
+        Hero currentHero;
+
+        if (activePlayer == 1) {
+            currentPLayer = game.getPlayerOne();
+        } else {
+            currentPLayer = game.getPlayerTwo();
+        }
+        currentHero = currentPLayer.getPlayerHero();
+
+        ObjectNode toSend = objectMapper.createObjectNode();
+        toSend.put("command", "useHeroAbility");
+        toSend.put("affectedRow", affectedRow);
+
+        if (currentPLayer.getMana() < currentHero.getMana()) {
+            toSend.put("error", "Not enough mana to use hero's ability.");
+            output.add(toSend);
+        } else if (currentHero.hasAttacked()) {
+            toSend.put("error", "Hero has already attacked this turn.");
+            output.add(toSend);
+        } else if (currentHero instanceof LordRoyce || currentHero instanceof EmpressThorina) {
+            if ((activePlayer == 1 && (affectedRow == 2 || affectedRow == 3)) ||
+                    (activePlayer == 2 && (affectedRow == 0 || affectedRow == 1))) {
+                toSend.put("error", "Selected row does not belong to the enemy.");
+                output.add(toSend);
+            } else {
+                currentHero.useHeroAbility(game, affectedRow);
+                currentHero.setHasAttacked(true);
+                currentPLayer.setMana(currentPLayer.getMana() - currentHero.getMana());
+            }
+        } else if (currentHero instanceof GeneralKocioraw || currentHero instanceof KingMudface) {
+            if ((activePlayer == 1 && (affectedRow == 0 || affectedRow == 1)) ||
+                    (activePlayer == 2 && (affectedRow == 2 || affectedRow == 3))) {
+                toSend.put("error", "Selected row does not belong to the current player.");
+                output.add(toSend);
+            } else {
+                currentHero.useHeroAbility(game, affectedRow);
+                currentHero.setHasAttacked(true);
+                currentPLayer.setMana(currentPLayer.getMana() - currentHero.getMana());
             }
         }
     }

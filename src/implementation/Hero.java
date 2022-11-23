@@ -8,6 +8,7 @@ public abstract class Hero {
     private String description;
     private ArrayList<String> colors;
     private String name;
+    private boolean hasAttacked;
 
     public int getMana() {
         return mana;
@@ -49,5 +50,13 @@ public abstract class Hero {
         this.name = name;
     }
 
-    public abstract void useHeroAbility(int affectedRow);
+    public boolean hasAttacked() {
+        return hasAttacked;
+    }
+
+    public void setHasAttacked(boolean hasAttacked) {
+        this.hasAttacked = hasAttacked;
+    }
+
+    public abstract void useHeroAbility(Game game, int affectedRow);
 }
