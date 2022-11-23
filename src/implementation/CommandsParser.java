@@ -18,12 +18,29 @@ import implementation.standardMinions.Warden;
 
 import java.util.ArrayList;
 
-public class CommandsParser {
-    static ObjectMapper objectMapper = new ObjectMapper();
+/**
+ * Utility class that implements debugging and action commands
+ * given at input.
+ *
+ * @author wh1ter0se
+ */
+public final class CommandsParser {
+    private CommandsParser() {
 
-    public static void getPlayerDeck(Game game, int playerIdx, ArrayNode output) {
-        ArrayNode nestedOutput = objectMapper.createArrayNode();
-        ArrayNode deckNode = objectMapper.createArrayNode();
+    }
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    /**
+     * Method that passes to output the selected player's deck.
+     *
+     * @param game Current game that is being played.
+     * @param playerIdx Index of selected player.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void getPlayerDeck(final Game game,
+                                     final int playerIdx, final ArrayNode output) {
+        ArrayNode nestedOutput = OBJECT_MAPPER.createArrayNode();
+        ArrayNode deckNode = OBJECT_MAPPER.createArrayNode();
         ArrayList<Card> deck;
 
         if (playerIdx == 1) {
@@ -33,12 +50,12 @@ public class CommandsParser {
         }
 
         for (Card card : deck) {
-            ObjectNode cardNode = objectMapper.createObjectNode();
+            ObjectNode cardNode = OBJECT_MAPPER.createObjectNode();
 
             if (card instanceof Minion) {
                 cardNode.put("attackDamage", ((Minion) card).getAttackDamage());
             }
-            ArrayNode colors = objectMapper.createArrayNode();
+            ArrayNode colors = OBJECT_MAPPER.createArrayNode();
             for (int j = 0; j < card.getColors().size(); j++) {
                 colors.add(card.getColors().get(j));
             }
@@ -55,7 +72,7 @@ public class CommandsParser {
 
         nestedOutput.addAll(deckNode);
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "getPlayerDeck");
         toSend.set("output", nestedOutput);
         toSend.put("playerIdx", playerIdx);
@@ -63,9 +80,17 @@ public class CommandsParser {
         output.add(toSend);
     }
 
-    public static void getCardsInHand(Game game, int playerIdx, ArrayNode output) {
-        ArrayNode nestedOutput = objectMapper.createArrayNode();
-        ArrayNode handNode = objectMapper.createArrayNode();
+    /**
+     * Method that passes to output the selected player's hand.
+     *
+     * @param game Current game that is being played.
+     * @param playerIdx Index of selected player.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void getCardsInHand(final Game game,
+                                      final int playerIdx, final ArrayNode output) {
+        ArrayNode nestedOutput = OBJECT_MAPPER.createArrayNode();
+        ArrayNode handNode = OBJECT_MAPPER.createArrayNode();
         ArrayList<Card> hand;
 
         if (playerIdx == 1) {
@@ -75,12 +100,12 @@ public class CommandsParser {
         }
 
         for (Card card : hand) {
-            ObjectNode cardNode = objectMapper.createObjectNode();
+            ObjectNode cardNode = OBJECT_MAPPER.createObjectNode();
 
             if (card instanceof Minion) {
                 cardNode.put("attackDamage", ((Minion) card).getAttackDamage());
             }
-            ArrayNode colors = objectMapper.createArrayNode();
+            ArrayNode colors = OBJECT_MAPPER.createArrayNode();
             for (int j = 0; j < card.getColors().size(); j++) {
                 colors.add(card.getColors().get(j));
             }
@@ -97,7 +122,7 @@ public class CommandsParser {
 
         nestedOutput.addAll(handNode);
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "getCardsInHand");
         toSend.set("output", nestedOutput);
         toSend.put("playerIdx", playerIdx);
@@ -105,8 +130,16 @@ public class CommandsParser {
         output.add(toSend);
     }
 
-    public static void getPlayerHero(Game game, int playerIdx, ArrayNode output) {
-        ObjectNode heroNode = objectMapper.createObjectNode();
+    /**
+     * Method that passes to output the selected player's Hero.
+     *
+     * @param game Current game that is being played.
+     * @param playerIdx Index of selected player.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void getPlayerHero(final Game game,
+                                     final int playerIdx, final ArrayNode output) {
+        ObjectNode heroNode = OBJECT_MAPPER.createObjectNode();
         Hero hero;
 
         if (playerIdx == 1) {
@@ -117,7 +150,7 @@ public class CommandsParser {
 
         heroNode.put("mana", hero.getMana());
         heroNode.put("description", hero.getDescription());
-        ArrayNode colors = objectMapper.createArrayNode();
+        ArrayNode colors = OBJECT_MAPPER.createArrayNode();
         for (int i = 0; i < hero.getColors().size(); i++) {
             colors.add(hero.getColors().get(i));
         }
@@ -125,7 +158,7 @@ public class CommandsParser {
         heroNode.put("name", hero.getName());
         heroNode.put("health", hero.getHealth());
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "getPlayerHero");
         toSend.set("output", heroNode);
         toSend.put("playerIdx", playerIdx);
@@ -133,15 +166,30 @@ public class CommandsParser {
         output.add(toSend);
     }
 
-    public static void getPlayerTurn(Game game, ArrayNode output) {
-        ObjectNode toSend = objectMapper.createObjectNode();
+    /**
+     * Method that passes to output which player's turn it is currently.
+     *
+     * @param game Current game that is being played.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void getPlayerTurn(final Game game,
+                                     final ArrayNode output) {
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "getPlayerTurn");
         toSend.put("output", game.getActivePlayer());
 
         output.add(toSend);
     }
 
-    public static void endPlayerTurn(Game game, int startingPlayer) {
+    /**
+     * Method that ends the current player's turn and unfreezes its frozen cards.
+     * If a new round is to begin, both players also draw a card from their decks.
+     *
+     * @param game Current game that is being played.
+     * @param startingPlayer Index of player that started the game.
+     */
+    public static void endPlayerTurn(final Game game,
+                                     final int startingPlayer) {
         int activePlayer = game.getActivePlayer();
         Hero activePlayerHero;
         int frontRow;
@@ -149,45 +197,51 @@ public class CommandsParser {
 
         if (activePlayer == 1) {
             activePlayerHero = game.getPlayerOne().getPlayerHero();
-            frontRow = 2;
-            backRow = 3;
+            frontRow = MagicNumbers.ROW_2;
+            backRow = MagicNumbers.ROW_3;
         } else {
             activePlayerHero = game.getPlayerTwo().getPlayerHero();
-            frontRow = 1;
-            backRow = 0;
+            frontRow = MagicNumbers.ROW_1;
+            backRow = MagicNumbers.ROW_0;
         }
 
-        if (game.gameTable[frontRow] != null) {
-            for (Card card : game.gameTable[frontRow]) {
-                ((Minion) card).setFrozen(false);
-                ((Minion) card).setHasAttacked(false);
-            }
+        for (Card card : game.getGameTable(frontRow)) {
+            ((Minion) card).setFrozen(false);
+            ((Minion) card).setHasAttacked(false);
         }
 
-        if (game.gameTable[backRow] != null) {
-            for (Card card : game.gameTable[backRow]) {
-                ((Minion) card).setFrozen(false);
-                ((Minion) card).setHasAttacked(false);
-            }
+        for (Card card : game.getGameTable(backRow)) {
+            ((Minion) card).setFrozen(false);
+            ((Minion) card).setHasAttacked(false);
         }
 
         activePlayerHero.setHasAttacked(false);
 
-        game.setActivePlayer(3 - game.getActivePlayer());
+        game.setActivePlayer(MagicNumbers.SWITCH_PLAYER - game.getActivePlayer());
+
         if (game.getActivePlayer() == startingPlayer) {
-            // Active player is starting player again, so a new round starts
             game.setRound(game.getRound() + 1);
 
             game.getPlayerOne().drawCardFromDeck();
             game.getPlayerTwo().drawCardFromDeck();
 
-            game.getPlayerOne().setMana(game.getPlayerOne().getMana() + Math.min(game.getRound(), 10));
-            game.getPlayerTwo().setMana(game.getPlayerTwo().getMana() + Math.min(game.getRound(), 10));
+            game.getPlayerOne().setMana(game.getPlayerOne().getMana()
+                    + Math.min(game.getRound(), MagicNumbers.MAX_MANA));
+            game.getPlayerTwo().setMana(game.getPlayerTwo().getMana()
+                    + Math.min(game.getRound(), MagicNumbers.MAX_MANA));
         }
     }
 
-    public static void getPlayerMana(Game game, int playerIdx, ArrayNode output) {
-        ObjectNode toSend = objectMapper.createObjectNode();
+    /**
+     * Method that passes to output the selected player's mana.
+     *
+     * @param game Current game that is being played.
+     * @param playerIdx Index of selected player.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void getPlayerMana(final Game game, final int playerIdx,
+                                     final ArrayNode output) {
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "getPlayerMana");
         toSend.put("playerIdx", playerIdx);
         if (playerIdx == 1) {
@@ -199,24 +253,34 @@ public class CommandsParser {
         output.add(toSend);
     }
 
-    public static void placeCard(Game game, int activePlayer, int handIdx, ArrayNode output) {
+    /**
+     * Method that places a card from a player's hand on the table and passes
+     * errors to output if needed.
+     *
+     * @param game Current game that is being played.
+     * @param activePlayer Player that is currently making a move.
+     * @param handIdx Index (in hand) of card that is to be placed.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void placeCard(final Game game, final int activePlayer,
+                                 final int handIdx, final ArrayNode output) {
         Player player;
         int frontRow;
         int backRow;
 
         if (activePlayer == 1) {
             player = game.getPlayerOne();
-            frontRow = 2;
-            backRow = 3;
+            frontRow = MagicNumbers.ROW_2;
+            backRow = MagicNumbers.ROW_3;
         } else {
             player = game.getPlayerTwo();
-            frontRow = 1;
-            backRow = 0;
+            frontRow = MagicNumbers.ROW_1;
+            backRow = MagicNumbers.ROW_0;
         }
 
         Card cardToPlace = player.getPlayerHand().get(handIdx);
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "placeCard");
         toSend.put("handIdx", handIdx);
 
@@ -229,28 +293,28 @@ public class CommandsParser {
         } else {
             String rowToPLace;
 
-            if (cardToPlace instanceof Goliath || cardToPlace instanceof Warden ||
-                    cardToPlace instanceof TheRipper || cardToPlace instanceof Miraj) {
+            if (cardToPlace instanceof Goliath || cardToPlace instanceof Warden
+                    || cardToPlace instanceof TheRipper || cardToPlace instanceof Miraj) {
                 rowToPLace = "front";
             } else {
                 rowToPLace = "back";
             }
 
             if (rowToPLace.equals("front")) {
-                if (game.gameTable[frontRow].size() == 5) {
+                if (game.getGameTable(frontRow).size() == MagicNumbers.ROW_CAPACITY) {
                     toSend.put("error", "Cannot place card on table since row is full.");
                     output.add(toSend);
                 } else {
-                    game.gameTable[frontRow].add(cardToPlace);
+                    game.getGameTable(frontRow).add(cardToPlace);
                     player.getPlayerHand().remove(cardToPlace);
                     player.setMana(player.getMana() - cardToPlace.getMana());
                 }
             } else {
-                if (game.gameTable[backRow].size() == 5) {
+                if (game.getGameTable(backRow).size() == MagicNumbers.ROW_CAPACITY) {
                     toSend.put("error", "Cannot place card on table since row is full.");
                     output.add(toSend);
                 } else {
-                    game.gameTable[backRow].add(cardToPlace);
+                    game.getGameTable(backRow).add(cardToPlace);
                     player.getPlayerHand().remove(cardToPlace);
                     player.setMana(player.getMana() - cardToPlace.getMana());
                 }
@@ -258,16 +322,22 @@ public class CommandsParser {
         }
     }
 
-    public static void getCardsOnTable(Game game, ArrayNode output) {
-        ArrayNode nestedOutput = objectMapper.createArrayNode();
+    /**
+     * Method that passes to output all cards that are currently placed on the table.
+     *
+     * @param game Current game that is being played.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void getCardsOnTable(final Game game, final ArrayNode output) {
+        ArrayNode nestedOutput = OBJECT_MAPPER.createArrayNode();
 
-        for (int i = 0; i < 4; i++) {
-            ArrayNode rowNode = objectMapper.createArrayNode();
-            for (Card card : game.gameTable[i]) {
-                ObjectNode cardNode = objectMapper.createObjectNode();
+        for (int i = 0; i < MagicNumbers.NUMBER_OF_ROWS; i++) {
+            ArrayNode rowNode = OBJECT_MAPPER.createArrayNode();
+            for (Card card : game.getGameTable(i)) {
+                ObjectNode cardNode = OBJECT_MAPPER.createObjectNode();
 
                 cardNode.put("attackDamage", ((Minion) card).getAttackDamage());
-                ArrayNode colors = objectMapper.createArrayNode();
+                ArrayNode colors = OBJECT_MAPPER.createArrayNode();
                 for (int k = 0; k < card.getColors().size(); k++) {
                     colors.add(card.getColors().get(k));
                 }
@@ -283,31 +353,43 @@ public class CommandsParser {
             nestedOutput.add(rowNode);
         }
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "getCardsOnTable");
         toSend.set("output", nestedOutput);
 
         output.add(toSend);
     }
 
-    public static void useEnvironmentCard(Game game, int activePlayer, int handIdx, int affectedRow, ArrayNode output) {
+    /**
+     * Method that uses an Environment card's ability, and then removes it from the
+     * player's hand.
+     *
+     * @param game Current game that is being played.
+     * @param activePlayer Player that is currently making a move.
+     * @param handIdx Index (in hand) of card that is to be used.
+     * @param affectedRow Row targeted by the Environment card.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void useEnvironmentCard(final Game game, final int activePlayer,
+                                          final int handIdx, final int affectedRow,
+                                          final ArrayNode output) {
         Player player;
         int frontRowToAttack;
         int backRowToAttack;
 
         if (activePlayer == 1) {
             player = game.getPlayerOne();
-            frontRowToAttack = 1;
-            backRowToAttack = 0;
+            frontRowToAttack = MagicNumbers.ROW_1;
+            backRowToAttack = MagicNumbers.ROW_0;
         } else {
             player = game.getPlayerTwo();
-            frontRowToAttack = 2;
-            backRowToAttack = 3;
+            frontRowToAttack = MagicNumbers.ROW_2;
+            backRowToAttack = MagicNumbers.ROW_3;
         }
 
         Card cardToUse = player.getPlayerHand().get(handIdx);
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "useEnvironmentCard");
         toSend.put("handIdx", handIdx);
         toSend.put("affectedRow", affectedRow);
@@ -322,7 +404,9 @@ public class CommandsParser {
             toSend.put("error", "Chosen row does not belong to the enemy.");
             output.add(toSend);
         } else {
-            if (cardToUse instanceof HeartHound && game.gameTable[3 - affectedRow].size() == 5) {
+            if (cardToUse instanceof HeartHound
+                    && game.getGameTable(MagicNumbers.SWITCH_PLAYER - affectedRow).size()
+                    == MagicNumbers.ROW_CAPACITY) {
                 toSend.put("error", "Cannot steal enemy card since the player's row is full.");
                 output.add(toSend);
             } else {
@@ -333,9 +417,17 @@ public class CommandsParser {
         }
     }
 
-    public static void getEnvironmentCardsInHand(Game game, int playerIdx, ArrayNode output) {
-        ArrayNode nestedOutput = objectMapper.createArrayNode();
-        ArrayNode handNode = objectMapper.createArrayNode();
+    /**
+     * Method that passes to output the selected player's Environment cards in hand.
+     *
+     * @param game Current game that is being played.
+     * @param playerIdx Index of selected player.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void getEnvironmentCardsInHand(final Game game, final int playerIdx,
+                                                 final ArrayNode output) {
+        ArrayNode nestedOutput = OBJECT_MAPPER.createArrayNode();
+        ArrayNode handNode = OBJECT_MAPPER.createArrayNode();
         ArrayList<Card> hand;
 
         if (playerIdx == 1) {
@@ -346,11 +438,11 @@ public class CommandsParser {
 
         for (Card card : hand) {
             if (card instanceof Environment) {
-                ObjectNode cardNode = objectMapper.createObjectNode();
+                ObjectNode cardNode = OBJECT_MAPPER.createObjectNode();
 
                 cardNode.put("mana", card.getMana());
                 cardNode.put("description", card.getDescription());
-                ArrayNode colors = objectMapper.createArrayNode();
+                ArrayNode colors = OBJECT_MAPPER.createArrayNode();
                 for (int j = 0; j < card.getColors().size(); j++) {
                     colors.add(card.getColors().get(j));
                 }
@@ -363,7 +455,7 @@ public class CommandsParser {
 
         nestedOutput.addAll(handNode);
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "getEnvironmentCardsInHand");
         toSend.set("output", nestedOutput);
         toSend.put("playerIdx", playerIdx);
@@ -371,26 +463,34 @@ public class CommandsParser {
         output.add(toSend);
     }
 
-    public static void getCardAtPosition(Game game, int x, int y, ArrayNode output) {
-        ObjectNode cardNode = objectMapper.createObjectNode();
+    /**
+     * Method that passes to output the card placed on the x-th row and y-th column
+     * on the table, or an error if there is no card at that position.
+     *
+     * @param game Current game that is being played.
+     * @param x Row of table.
+     * @param y Position in row.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void getCardAtPosition(final Game game, final int x, final int y,
+                                         final ArrayNode output) {
+        ObjectNode cardNode = OBJECT_MAPPER.createObjectNode();
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "getCardAtPosition");
         toSend.put("x", x);
         toSend.put("y", y);
 
-        if (game.gameTable[x] == null) {
-            toSend.put("output", "No card available at that position.");
-        } else if (game.gameTable[x].size() <= y) {
+        if (game.getGameTable(x).size() <= y) {
             toSend.put("output", "No card available at that position.");
         } else {
-            Card card = game.gameTable[x].get(y);
+            Card card = game.getGameTable(x).get(y);
 
             cardNode.put("mana", card.getMana());
             cardNode.put("attackDamage", ((Minion) card).getAttackDamage());
             cardNode.put("health", ((Minion) card).getHealth());
             cardNode.put("description", card.getDescription());
-            ArrayNode colors = objectMapper.createArrayNode();
+            ArrayNode colors = OBJECT_MAPPER.createArrayNode();
             for (int i = 0; i < card.getColors().size(); i++) {
                 colors.add(card.getColors().get(i));
             }
@@ -403,16 +503,22 @@ public class CommandsParser {
         output.add(toSend);
     }
 
-    public static void getFrozenCardsOnTable(Game game, ArrayNode output) {
-        ArrayNode nestedOutput = objectMapper.createArrayNode();
+    /**
+     * Method that passes to output all currently frozen cards on the table.
+     *
+     * @param game Current game that is being played.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void getFrozenCardsOnTable(final Game game, final ArrayNode output) {
+        ArrayNode nestedOutput = OBJECT_MAPPER.createArrayNode();
 
-        for (int i = 0; i < 4; i++) {
-            for (Card card : game.gameTable[i]) {
+        for (int i = 0; i < MagicNumbers.NUMBER_OF_ROWS; i++) {
+            for (Card card : game.getGameTable(i)) {
                 if (((Minion) card).isFrozen()) {
-                    ObjectNode cardNode = objectMapper.createObjectNode();
+                    ObjectNode cardNode = OBJECT_MAPPER.createObjectNode();
 
                     cardNode.put("attackDamage", ((Minion) card).getAttackDamage());
-                    ArrayNode colors = objectMapper.createArrayNode();
+                    ArrayNode colors = OBJECT_MAPPER.createArrayNode();
                     for (int k = 0; k < card.getColors().size(); k++) {
                         colors.add(card.getColors().get(k));
                     }
@@ -427,48 +533,65 @@ public class CommandsParser {
             }
         }
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "getFrozenCardsOnTable");
         toSend.set("output", nestedOutput);
 
         output.add(toSend);
     }
 
-    public static void cardUsesAttack(Game game, Coordinates attackerCoordinates, Coordinates attackedCoordinates, ArrayNode output) {
-        Card cardAttacker = game.gameTable[attackerCoordinates.getX()].get(attackerCoordinates.getY());
-        Card cardAttacked = game.gameTable[attackedCoordinates.getX()].get(attackedCoordinates.getY());
+    /**
+     * Method that lets a card placed on the table attack an enemy one and passes
+     * errors to output if needed.
+     *
+     * @param game Current game that is being played.
+     * @param attackerCoordinates Coordinates of attacker.
+     * @param attackedCoordinates Coordinates of victim.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void cardUsesAttack(final Game game, final Coordinates attackerCoordinates,
+                                      final Coordinates attackedCoordinates,
+                                      final ArrayNode output) {
+        Card cardAttacker = game.getGameTable(attackerCoordinates.getX())
+                .get(attackerCoordinates.getY());
+        Card cardAttacked = game.getGameTable(attackedCoordinates.getX())
+                .get(attackedCoordinates.getY());
 
-        ObjectNode nodeAttacker = objectMapper.createObjectNode();
+        ObjectNode nodeAttacker = OBJECT_MAPPER.createObjectNode();
         nodeAttacker.put("x", attackerCoordinates.getX());
         nodeAttacker.put("y", attackerCoordinates.getY());
 
-        ObjectNode nodeAttacked = objectMapper.createObjectNode();
+        ObjectNode nodeAttacked = OBJECT_MAPPER.createObjectNode();
         nodeAttacked.put("x", attackedCoordinates.getX());
         nodeAttacked.put("y", attackedCoordinates.getY());
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "cardUsesAttack");
         toSend.set("cardAttacker", nodeAttacker);
         toSend.set("cardAttacked", nodeAttacked);
 
         boolean tankExists = false;
         int lookForTankRow = attackedCoordinates.getX();
-        if (lookForTankRow == 0) {
-            lookForTankRow = 1;
-        } else if (lookForTankRow == 3) {
-            lookForTankRow = 2;
+        if (lookForTankRow == MagicNumbers.ROW_0) {
+            lookForTankRow = MagicNumbers.ROW_1;
+        } else if (lookForTankRow == MagicNumbers.ROW_3) {
+            lookForTankRow = MagicNumbers.ROW_2;
         }
-        for (Card card : game.gameTable[lookForTankRow]) {
+        for (Card card : game.getGameTable(lookForTankRow)) {
             if (((Minion) card).isTank()) {
                 tankExists = true;
                 break;
             }
         }
 
-        if (((attackerCoordinates.getX() == 1 || attackerCoordinates.getX() == 0) &&
-                (attackedCoordinates.getX() == 1 || attackedCoordinates.getX() == 0)) ||
-                ((attackerCoordinates.getX() == 2 || attackerCoordinates.getX() == 3) &&
-                (attackedCoordinates.getX() == 2 || attackedCoordinates.getX() == 3))) {
+        if (((attackerCoordinates.getX() == MagicNumbers.ROW_1
+                || attackerCoordinates.getX() == MagicNumbers.ROW_0)
+                && (attackedCoordinates.getX() == MagicNumbers.ROW_1
+                || attackedCoordinates.getX() == MagicNumbers.ROW_0))
+                || ((attackerCoordinates.getX() == MagicNumbers.ROW_2
+                || attackerCoordinates.getX() == MagicNumbers.ROW_3)
+                && (attackedCoordinates.getX() == MagicNumbers.ROW_2
+                || attackedCoordinates.getX() == MagicNumbers.ROW_3))) {
             toSend.put("error", "Attacked card does not belong to the enemy.");
             output.add(toSend);
         } else if (((Minion) cardAttacker).hasAttacked()) {
@@ -481,40 +604,54 @@ public class CommandsParser {
             toSend.put("error", "Attacked card is not of type 'Tank'.");
             output.add(toSend);
         } else {
-            ((Minion) cardAttacked).setHealth(((Minion) cardAttacked).getHealth() - ((Minion) cardAttacker).getAttackDamage());
+            ((Minion) cardAttacked).setHealth(((Minion) cardAttacked).getHealth()
+                    - ((Minion) cardAttacker).getAttackDamage());
             if (((Minion) cardAttacked).getHealth() <= 0) {
-                game.gameTable[attackedCoordinates.getX()].remove(cardAttacked);
+                game.getGameTable(attackedCoordinates.getX()).remove(cardAttacked);
             }
 
             ((Minion) cardAttacker).setHasAttacked(true);
         }
     }
 
-    public static void cardUsesAbility(Game game, Coordinates attackerCoordinates, Coordinates attackedCoordinates, ArrayNode output) {
-        Card cardAttacker = game.gameTable[attackerCoordinates.getX()].get(attackerCoordinates.getY());
-        Card cardAttacked = game.gameTable[attackedCoordinates.getX()].get(attackedCoordinates.getY());
+    /**
+     * Method that lets a card placed on the table use its ability on an enemy one and passes
+     * errors to output if needed.
+     *
+     * @param game Current game that is being played.
+     * @param attackerCoordinates Coordinates of attacker.
+     * @param attackedCoordinates Coordinates of victim.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void cardUsesAbility(final Game game, final Coordinates attackerCoordinates,
+                                       final Coordinates attackedCoordinates,
+                                       final ArrayNode output) {
+        Card cardAttacker = game.getGameTable(attackerCoordinates.getX())
+                .get(attackerCoordinates.getY());
+        Card cardAttacked = game.getGameTable(attackedCoordinates.getX())
+                .get(attackedCoordinates.getY());
 
-        ObjectNode nodeAttacker = objectMapper.createObjectNode();
+        ObjectNode nodeAttacker = OBJECT_MAPPER.createObjectNode();
         nodeAttacker.put("x", attackerCoordinates.getX());
         nodeAttacker.put("y", attackerCoordinates.getY());
 
-        ObjectNode nodeAttacked = objectMapper.createObjectNode();
+        ObjectNode nodeAttacked = OBJECT_MAPPER.createObjectNode();
         nodeAttacked.put("x", attackedCoordinates.getX());
         nodeAttacked.put("y", attackedCoordinates.getY());
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "cardUsesAbility");
         toSend.set("cardAttacker", nodeAttacker);
         toSend.set("cardAttacked", nodeAttacked);
 
         boolean tankExists = false;
         int lookForTankRow = attackedCoordinates.getX();
-        if (lookForTankRow == 0) {
-            lookForTankRow = 1;
-        } else if (lookForTankRow == 3) {
-            lookForTankRow = 2;
+        if (lookForTankRow == MagicNumbers.ROW_0) {
+            lookForTankRow = MagicNumbers.ROW_1;
+        } else if (lookForTankRow == MagicNumbers.ROW_3) {
+            lookForTankRow = MagicNumbers.ROW_2;
         }
-        for (Card card : game.gameTable[lookForTankRow]) {
+        for (Card card : game.getGameTable(lookForTankRow)) {
             if (((Minion) card).isTank()) {
                 tankExists = true;
                 break;
@@ -528,22 +665,29 @@ public class CommandsParser {
             toSend.put("error", "Attacker card has already attacked this turn.");
             output.add(toSend);
         } else if (cardAttacker instanceof Disciple) {
-            if (((attackerCoordinates.getX() == 0 || attackerCoordinates.getX() == 1) &&
-                    (attackedCoordinates.getX() == 2 || attackedCoordinates.getX() == 3)) ||
-                    ((attackerCoordinates.getX() == 2 || attackerCoordinates.getX() == 3) &&
-                    (attackedCoordinates.getX() == 0 || attackedCoordinates.getX() == 1))) {
+            if (((attackerCoordinates.getX() == MagicNumbers.ROW_0
+                    || attackerCoordinates.getX() == MagicNumbers.ROW_1)
+                    && (attackedCoordinates.getX() == MagicNumbers.ROW_2
+                    || attackedCoordinates.getX() == MagicNumbers.ROW_3))
+                    || ((attackerCoordinates.getX() == MagicNumbers.ROW_2
+                    || attackerCoordinates.getX() == MagicNumbers.ROW_3)
+                    && (attackedCoordinates.getX() == MagicNumbers.ROW_0
+                    || attackedCoordinates.getX() == MagicNumbers.ROW_1))) {
                 toSend.put("error", "Attacked card does not belong to the current player.");
                 output.add(toSend);
             } else {
                 ((AbilityMinion) cardAttacker).useMinionAbility(game, attackedCoordinates);
             }
-        } else if (cardAttacker instanceof TheRipper ||
-                cardAttacker instanceof Miraj ||
-                cardAttacker instanceof TheCursedOne) {
-            if (((attackerCoordinates.getX() == 0 || attackerCoordinates.getX() == 1) &&
-                    (attackedCoordinates.getX() == 0 || attackedCoordinates.getX() == 1)) ||
-                    ((attackerCoordinates.getX() == 2 || attackerCoordinates.getX() == 3) &&
-                    (attackedCoordinates.getX() == 2 || attackedCoordinates.getX() == 3))) {
+        } else if (cardAttacker instanceof TheRipper || cardAttacker instanceof Miraj
+                || cardAttacker instanceof TheCursedOne) {
+            if (((attackerCoordinates.getX() == MagicNumbers.ROW_0
+                    || attackerCoordinates.getX() == MagicNumbers.ROW_1)
+                    && (attackedCoordinates.getX() == MagicNumbers.ROW_0
+                    || attackedCoordinates.getX() == MagicNumbers.ROW_1))
+                    || ((attackerCoordinates.getX() == MagicNumbers.ROW_2
+                    || attackerCoordinates.getX() == MagicNumbers.ROW_3)
+                    && (attackedCoordinates.getX() == MagicNumbers.ROW_2
+                    || attackedCoordinates.getX() == MagicNumbers.ROW_3))) {
                 toSend.put("error", "Attacked card does not belong to the enemy.");
                 output.add(toSend);
             } else if (tankExists && !((Minion) cardAttacked).isTank()) {
@@ -558,33 +702,44 @@ public class CommandsParser {
         }
     }
 
-    public static void useAttackHero(Game game, Coordinates attackerCoordinates, ArrayNode output) {
+    /**
+     * Method that lets a card placed on the table attack the enemy Hero.
+     *
+     * @param game Current game that is being played.
+     * @param attackerCoordinates Coordinates of attacker.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void useAttackHero(final Game game, final Coordinates attackerCoordinates,
+                                     final ArrayNode output) {
         Hero enemyHero;
 
-        if (attackerCoordinates.getX() == 0 || attackerCoordinates.getX() == 1) {
+        if (attackerCoordinates.getX() == MagicNumbers.ROW_0
+                || attackerCoordinates.getX() == MagicNumbers.ROW_1) {
             enemyHero = game.getPlayerOne().getPlayerHero();
         } else {
             enemyHero = game.getPlayerTwo().getPlayerHero();
         }
 
-        Card cardAttacker = game.gameTable[attackerCoordinates.getX()].get(attackerCoordinates.getY());
+        Card cardAttacker = game.getGameTable(attackerCoordinates.getX())
+                .get(attackerCoordinates.getY());
 
-        ObjectNode nodeAttacker = objectMapper.createObjectNode();
+        ObjectNode nodeAttacker = OBJECT_MAPPER.createObjectNode();
         nodeAttacker.put("x", attackerCoordinates.getX());
         nodeAttacker.put("y", attackerCoordinates.getY());
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "useAttackHero");
         toSend.set("cardAttacker", nodeAttacker);
 
         boolean tankExists = false;
         int lookForTankRow;
-        if (attackerCoordinates.getX() == 0 || attackerCoordinates.getX() == 1) {
-            lookForTankRow = 2;
+        if (attackerCoordinates.getX() == MagicNumbers.ROW_0
+                || attackerCoordinates.getX() == MagicNumbers.ROW_1) {
+            lookForTankRow = MagicNumbers.ROW_2;
         } else {
-            lookForTankRow = 1;
+            lookForTankRow = MagicNumbers.ROW_1;
         }
-        for (Card card : game.gameTable[lookForTankRow]) {
+        for (Card card : game.getGameTable(lookForTankRow)) {
             if (((Minion) card).isTank()) {
                 tankExists = true;
                 break;
@@ -606,22 +761,34 @@ public class CommandsParser {
 
             if (enemyHero.getHealth() <= 0) {
                 game.setGameEnded(true);
-                MainGame.getInstance().setTotalGamesPlayed(MainGame.getInstance().getTotalGamesPlayed() + 1);
+                MainGame.getInstance().setTotalGamesPlayed(
+                        MainGame.getInstance().getTotalGamesPlayed() + 1);
 
-                ObjectNode victoryNode = objectMapper.createObjectNode();
-                if (attackerCoordinates.getX() == 0 || attackerCoordinates.getX() == 1) {
+                ObjectNode victoryNode = OBJECT_MAPPER.createObjectNode();
+                if (attackerCoordinates.getX() == MagicNumbers.ROW_0
+                        || attackerCoordinates.getX() == MagicNumbers.ROW_1) {
                     victoryNode.put("gameEnded", "Player two killed the enemy hero.");
-                    MainGame.getInstance().setPlayerTwoWins(MainGame.getInstance().getPlayerTwoWins() + 1);
+                    MainGame.getInstance().setPlayerTwoWins(
+                            MainGame.getInstance().getPlayerTwoWins() + 1);
                 } else {
                     victoryNode.put("gameEnded", "Player one killed the enemy hero.");
-                    MainGame.getInstance().setPlayerOneWins(MainGame.getInstance().getPlayerOneWins() + 1);
+                    MainGame.getInstance().setPlayerOneWins(
+                            MainGame.getInstance().getPlayerOneWins() + 1);
                 }
                 output.add(victoryNode);
             }
         }
     }
 
-    public static void useHeroAbility(Game game, int affectedRow, ArrayNode output) {
+    /**
+     * Method that lets a Hero use its ability.
+     *
+     * @param game Current game that is being played.
+     * @param affectedRow Row targeted by Hero.
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void useHeroAbility(final Game game, final int affectedRow,
+                                      final ArrayNode output) {
         int activePlayer = game.getActivePlayer();
         Player currentPLayer;
         Hero currentHero;
@@ -633,7 +800,7 @@ public class CommandsParser {
         }
         currentHero = currentPLayer.getPlayerHero();
 
-        ObjectNode toSend = objectMapper.createObjectNode();
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "useHeroAbility");
         toSend.put("affectedRow", affectedRow);
 
@@ -644,8 +811,10 @@ public class CommandsParser {
             toSend.put("error", "Hero has already attacked this turn.");
             output.add(toSend);
         } else if (currentHero instanceof LordRoyce || currentHero instanceof EmpressThorina) {
-            if ((activePlayer == 1 && (affectedRow == 2 || affectedRow == 3)) ||
-                    (activePlayer == 2 && (affectedRow == 0 || affectedRow == 1))) {
+            if ((activePlayer == 1
+                    && (affectedRow == MagicNumbers.ROW_2 || affectedRow == MagicNumbers.ROW_3))
+                    || (activePlayer == 2
+                    && (affectedRow == MagicNumbers.ROW_0 || affectedRow == MagicNumbers.ROW_1))) {
                 toSend.put("error", "Selected row does not belong to the enemy.");
                 output.add(toSend);
             } else {
@@ -654,8 +823,10 @@ public class CommandsParser {
                 currentPLayer.setMana(currentPLayer.getMana() - currentHero.getMana());
             }
         } else if (currentHero instanceof GeneralKocioraw || currentHero instanceof KingMudface) {
-            if ((activePlayer == 1 && (affectedRow == 0 || affectedRow == 1)) ||
-                    (activePlayer == 2 && (affectedRow == 2 || affectedRow == 3))) {
+            if ((activePlayer == 1
+                    && (affectedRow == MagicNumbers.ROW_0 || affectedRow == MagicNumbers.ROW_1))
+                    || (activePlayer == 2
+                    && (affectedRow == MagicNumbers.ROW_2 || affectedRow == MagicNumbers.ROW_3))) {
                 toSend.put("error", "Selected row does not belong to the current player.");
                 output.add(toSend);
             } else {
@@ -666,22 +837,40 @@ public class CommandsParser {
         }
     }
 
-    public static void getTotalGamesPlayed(ArrayNode output) {
-        ObjectNode toSend = objectMapper.createObjectNode();
+    /**
+     * Method that passes to output number of games played so far
+     * during the match.
+     *
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void getTotalGamesPlayed(final ArrayNode output) {
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "getTotalGamesPlayed");
         toSend.put("output", MainGame.getInstance().getTotalGamesPlayed());
         output.add(toSend);
     }
 
-    public static void getPlayerOneWins(ArrayNode output) {
-        ObjectNode toSend = objectMapper.createObjectNode();
+    /**
+     * Method that passes to output number of games won by player one so far
+     * during the match.
+     *
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void getPlayerOneWins(final ArrayNode output) {
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "getPlayerOneWins");
         toSend.put("output", MainGame.getInstance().getPlayerOneWins());
         output.add(toSend);
     }
 
-    public static void getPlayerTwoWins(ArrayNode output) {
-        ObjectNode toSend = objectMapper.createObjectNode();
+    /**
+     * Method that passes to output number of games won by player two so far
+     * during the match.
+     *
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void getPlayerTwoWins(final ArrayNode output) {
+        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
         toSend.put("command", "getPlayerTwoWins");
         toSend.put("output", MainGame.getInstance().getPlayerTwoWins());
         output.add(toSend);

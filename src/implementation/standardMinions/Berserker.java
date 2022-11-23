@@ -4,8 +4,16 @@ import implementation.Minion;
 
 import java.util.ArrayList;
 
-public class Berserker extends Minion {
-    public Berserker(int mana, int attackDamage, int health, String description, ArrayList<String> colors, String name) {
+/**
+ * Minion card that does not have an ability.
+ *
+ * @author wh1ter0se
+ */
+public final class Berserker extends Minion {
+    public Berserker(final int mana, final int attackDamage, final int health,
+                     final String description, final ArrayList<String> colors,
+                     final String name) {
+        super();
         this.setMana(mana);
         this.setAttackDamage(attackDamage);
         this.setHealth(health);
@@ -13,7 +21,5 @@ public class Berserker extends Minion {
         this.setColors(colors);
         this.setName(name);
         this.setTank(false);
-        this.setFrozen(false);
-        this.setHasAttacked(false);
     }
 }

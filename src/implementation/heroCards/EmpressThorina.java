@@ -7,22 +7,34 @@ import implementation.Minion;
 
 import java.util.ArrayList;
 
-public class EmpressThorina extends Hero {
-    public EmpressThorina(int mana, String description, ArrayList<String> colors, String name) {
+/**
+ * Hero card.
+ *
+ * @author wh1ter0se
+ */
+public final class EmpressThorina extends Hero {
+    public EmpressThorina(final int mana, final String description,
+                          final ArrayList<String> colors, final String name) {
+        super();
         this.setMana(mana);
-        this.setHealth(30);
         this.setDescription(description);
         this.setColors(colors);
         this.setName(name);
-        this.setHasAttacked(false);
     }
 
+    /**
+     * <strong>Low Blow:</strong>
+     * Destroys opponent card with most health on selected row.
+     *
+     * @param game Current game that is being played.
+     * @param affectedRow Row targeted by the Hero's ability.
+     */
     @Override
-    public void useHeroAbility(Game game, int affectedRow) {
+    public void useHeroAbility(final Game game, final int affectedRow) {
         int maxHealth = 0;
         Card cardToRemove = null;
 
-        for (Card card : game.gameTable[affectedRow]) {
+        for (Card card : game.getGameTable(affectedRow)) {
             if (((Minion) card).getHealth() > maxHealth) {
                 maxHealth = ((Minion) card).getHealth();
                 cardToRemove = card;
@@ -30,7 +42,7 @@ public class EmpressThorina extends Hero {
         }
 
         if (cardToRemove != null) {
-            game.gameTable[affectedRow].remove(cardToRemove);
+            game.getGameTable(affectedRow).remove(cardToRemove);
         }
     }
 }

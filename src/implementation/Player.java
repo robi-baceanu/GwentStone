@@ -3,16 +3,32 @@ package implementation;
 import fileio.CardInput;
 import fileio.Input;
 import fileio.StartGameInput;
-import implementation.abilityMinions.*;
-import implementation.environmentCards.*;
-import implementation.heroCards.*;
-import implementation.standardMinions.*;
+import implementation.standardMinions.Warden;
+import implementation.standardMinions.Goliath;
+import implementation.standardMinions.Berserker;
+import implementation.standardMinions.Sentinel;
+import implementation.abilityMinions.Disciple;
+import implementation.abilityMinions.TheRipper;
+import implementation.abilityMinions.TheCursedOne;
+import implementation.abilityMinions.Miraj;
+import implementation.environmentCards.HeartHound;
+import implementation.environmentCards.Winterfell;
+import implementation.environmentCards.Firestorm;
+import implementation.heroCards.KingMudface;
+import implementation.heroCards.GeneralKocioraw;
+import implementation.heroCards.EmpressThorina;
+import implementation.heroCards.LordRoyce;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-public class Player {
+/**
+ * Class that describes a player, his assigned deck and his assigned Hero.
+ *
+ * @author wh1ter0se
+ */
+public final class Player {
     private final Input inputData = MainGame.getInstance().getInputData();
     private final ArrayList<Card> playerDeck = new ArrayList<Card>();
     private final ArrayList<Card> playerHand = new ArrayList<Card>();
@@ -31,7 +47,7 @@ public class Player {
         return playerHero;
     }
 
-    public void setPlayerHero(Hero playerHero) {
+    public void setPlayerHero(final Hero playerHero) {
         this.playerHero = playerHero;
     }
 
@@ -39,11 +55,18 @@ public class Player {
         return mana;
     }
 
-    public void setMana(int mana) {
+    public void setMana(final int mana) {
         this.mana = mana;
     }
 
-    public void assignPlayerDeck(int player, int gameNumber) {
+    /**
+     * Method that assigns a player one deck from a selection of many given at input,
+     * and also shuffles the deck.
+     *
+     * @param player Whether deck is being assigned to player one or player two.
+     * @param gameNumber Number of current game from the match.
+     */
+    public void assignPlayerDeck(final int player, final int gameNumber) {
         StartGameInput currentGame = inputData.getGames().get(gameNumber).getStartGame();
 
         int playerDeckIdx;
@@ -72,34 +95,52 @@ public class Player {
 
             switch (cardName) {
                 case "Sentinel" ->
-                        playerDeck.add(new Sentinel(cardMana, cardAttackDamage, cardHealth, cardDescription, cardColors, cardName));
+                        playerDeck.add(new Sentinel(cardMana, cardAttackDamage, cardHealth,
+                                cardDescription, cardColors, cardName));
                 case "Berserker" ->
-                        playerDeck.add(new Berserker(cardMana, cardAttackDamage, cardHealth, cardDescription, cardColors, cardName));
+                        playerDeck.add(new Berserker(cardMana, cardAttackDamage, cardHealth,
+                                cardDescription, cardColors, cardName));
                 case "Goliath" ->
-                        playerDeck.add(new Goliath(cardMana, cardAttackDamage, cardHealth, cardDescription, cardColors, cardName));
+                        playerDeck.add(new Goliath(cardMana, cardAttackDamage, cardHealth,
+                                cardDescription, cardColors, cardName));
                 case "Warden" ->
-                        playerDeck.add(new Warden(cardMana, cardAttackDamage, cardHealth, cardDescription, cardColors, cardName));
+                        playerDeck.add(new Warden(cardMana, cardAttackDamage, cardHealth,
+                                cardDescription, cardColors, cardName));
                 case "Miraj" ->
-                        playerDeck.add(new Miraj(cardMana, cardAttackDamage, cardHealth, cardDescription, cardColors, cardName));
+                        playerDeck.add(new Miraj(cardMana, cardAttackDamage, cardHealth,
+                                cardDescription, cardColors, cardName));
                 case "The Ripper" ->
-                        playerDeck.add(new TheRipper(cardMana, cardAttackDamage, cardHealth, cardDescription, cardColors, cardName));
+                        playerDeck.add(new TheRipper(cardMana, cardAttackDamage, cardHealth,
+                                cardDescription, cardColors, cardName));
                 case "Disciple" ->
-                        playerDeck.add(new Disciple(cardMana, cardAttackDamage, cardHealth, cardDescription, cardColors, cardName));
+                        playerDeck.add(new Disciple(cardMana, cardAttackDamage, cardHealth,
+                                cardDescription, cardColors, cardName));
                 case "The Cursed One" ->
-                        playerDeck.add(new TheCursedOne(cardMana, cardAttackDamage, cardHealth, cardDescription, cardColors, cardName));
+                        playerDeck.add(new TheCursedOne(cardMana, cardAttackDamage, cardHealth,
+                                cardDescription, cardColors, cardName));
                 case "Firestorm" ->
-                        playerDeck.add(new Firestorm(cardMana, cardDescription, cardColors, cardName));
+                        playerDeck.add(new Firestorm(cardMana, cardDescription, cardColors,
+                                cardName));
                 case "Winterfell" ->
-                        playerDeck.add(new Winterfell(cardMana, cardDescription, cardColors, cardName));
+                        playerDeck.add(new Winterfell(cardMana, cardDescription, cardColors,
+                                cardName));
                 case "Heart Hound" ->
-                        playerDeck.add(new HeartHound(cardMana, cardDescription, cardColors, cardName));
+                        playerDeck.add(new HeartHound(cardMana, cardDescription, cardColors,
+                                cardName));
+                default -> System.out.println("Unknown card.");
             }
         }
 
         Collections.shuffle(playerDeck, new Random(currentGame.getShuffleSeed()));
     }
 
-    public void assignPlayerHero(int player, int gameNumber) {
+    /**
+     * Method that assigns a player his Hero, given at input.
+     *
+     * @param player Whether Hero is being assigned to player one or player two.
+     * @param gameNumber Number of current game from the match.
+     */
+    public void assignPlayerHero(final int player, final int gameNumber) {
         StartGameInput currentGame = inputData.getGames().get(gameNumber).getStartGame();
 
         CardInput currentHero;
@@ -117,16 +158,25 @@ public class Player {
 
         switch (heroName) {
             case "Lord Royce" ->
-                    playerHero = new LordRoyce(heroMana, heroDescription, heroColors, heroName);
+                    this.setPlayerHero(new LordRoyce(heroMana, heroDescription,
+                            heroColors, heroName));
             case "Empress Thorina" ->
-                    playerHero = new EmpressThorina(heroMana, heroDescription, heroColors, heroName);
+                    this.setPlayerHero(new EmpressThorina(heroMana, heroDescription,
+                            heroColors, heroName));
             case "King Mudface" ->
-                    playerHero = new KingMudface(heroMana, heroDescription, heroColors, heroName);
+                    this.setPlayerHero(new KingMudface(heroMana, heroDescription,
+                            heroColors, heroName));
             case "General Kocioraw" ->
-                    playerHero = new GeneralKocioraw(heroMana, heroDescription, heroColors, heroName);
+                    this.setPlayerHero(new GeneralKocioraw(heroMana, heroDescription,
+                            heroColors, heroName));
+            default -> System.out.println("Unknown hero.");
         }
     }
 
+    /**
+     * Method that draws a card from the player's deck and puts it in
+     * his hand.
+     */
     public void drawCardFromDeck() {
         if (!playerDeck.isEmpty()) {
             playerHand.add(playerDeck.get(0));

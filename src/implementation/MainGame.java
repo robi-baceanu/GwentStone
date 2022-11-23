@@ -5,7 +5,13 @@ import fileio.ActionsInput;
 import fileio.GameInput;
 import fileio.Input;
 
-public class MainGame {
+/**
+ * Class that describes a match between two players, that can
+ * play multiple games. Implemented following Singleton pattern.
+ *
+ * @author wh1ter0se
+ */
+public final class MainGame {
     private static MainGame match = null;
     private Input inputData;
 
@@ -13,7 +19,9 @@ public class MainGame {
     private int playerOneWins;
     private int playerTwoWins;
 
-    private MainGame() {}
+    private MainGame() {
+
+    }
 
     public static MainGame getInstance() {
         if (match == null) {
@@ -26,7 +34,7 @@ public class MainGame {
         return inputData;
     }
 
-    public void setInputData(Input inputData) {
+    public void setInputData(final Input inputData) {
         this.inputData = inputData;
     }
 
@@ -34,7 +42,7 @@ public class MainGame {
         return totalGamesPlayed;
     }
 
-    public void setTotalGamesPlayed(int totalGamesPlayed) {
+    public void setTotalGamesPlayed(final int totalGamesPlayed) {
         this.totalGamesPlayed = totalGamesPlayed;
     }
 
@@ -42,7 +50,7 @@ public class MainGame {
         return playerOneWins;
     }
 
-    public void setPlayerOneWins(int playerOneWins) {
+    public void setPlayerOneWins(final int playerOneWins) {
         this.playerOneWins = playerOneWins;
     }
 
@@ -50,11 +58,17 @@ public class MainGame {
         return playerTwoWins;
     }
 
-    public void setPlayerTwoWins(int playerTwoWins) {
+    public void setPlayerTwoWins(final int playerTwoWins) {
         this.playerTwoWins = playerTwoWins;
     }
 
-    public static void startMatch(ArrayNode output) {
+    /**
+     * Method that represents the entry point of the project, which simulates
+     * a match between two players.
+     *
+     * @param output ArrayNode in which output data is stored to be passed as JSON file.
+     */
+    public static void startMatch(final ArrayNode output) {
         int gamesNumber = getInstance().inputData.getGames().size();
 
         MainGame.getInstance().setTotalGamesPlayed(0);
@@ -78,8 +92,10 @@ public class MainGame {
             game.getPlayerOne().drawCardFromDeck();
             game.getPlayerTwo().drawCardFromDeck();
 
-            game.getPlayerOne().setMana(game.getPlayerOne().getMana() + Math.min(game.getRound(), 10));
-            game.getPlayerTwo().setMana(game.getPlayerTwo().getMana() + Math.min(game.getRound(), 10));
+            game.getPlayerOne().setMana(game.getPlayerOne().getMana()
+                    + Math.min(game.getRound(), MagicNumbers.MAX_MANA));
+            game.getPlayerTwo().setMana(game.getPlayerTwo().getMana()
+                    + Math.min(game.getRound(), MagicNumbers.MAX_MANA));
 
             for (int j = 0; j < currentGame.getActions().size(); j++) {
                 ActionsInput currentAction = currentGame.getActions().get(j);
@@ -99,7 +115,8 @@ public class MainGame {
                         break;
                     case "endPlayerTurn":
                         if (!game.isGameEnded()) {
-                            CommandsParser.endPlayerTurn(game, currentGame.getStartGame().getStartingPlayer());
+                            CommandsParser.endPlayerTurn(game,
+                                    currentGame.getStartGame().getStartingPlayer());
                         }
                         break;
                     case "getPlayerMana":
@@ -107,7 +124,8 @@ public class MainGame {
                         break;
                     case "placeCard":
                         if (!game.isGameEnded()) {
-                            CommandsParser.placeCard(game, game.getActivePlayer(), currentAction.getHandIdx(), output);
+                            CommandsParser.placeCard(game, game.getActivePlayer(),
+                                    currentAction.getHandIdx(), output);
                         }
                         break;
                     case "getCardsOnTable":
@@ -115,15 +133,18 @@ public class MainGame {
                         break;
                     case "useEnvironmentCard":
                         if (!game.isGameEnded()) {
-                            CommandsParser.useEnvironmentCard(game, game.getActivePlayer(), currentAction.getHandIdx(),
+                            CommandsParser.useEnvironmentCard(game, game.getActivePlayer(),
+                                    currentAction.getHandIdx(),
                                     currentAction.getAffectedRow(), output);
                         }
                         break;
                     case "getEnvironmentCardsInHand":
-                        CommandsParser.getEnvironmentCardsInHand(game, currentAction.getPlayerIdx(), output);
+                        CommandsParser.getEnvironmentCardsInHand(game,
+                                currentAction.getPlayerIdx(), output);
                         break;
                     case "getCardAtPosition":
-                        CommandsParser.getCardAtPosition(game, currentAction.getX(), currentAction.getY(), output);
+                        CommandsParser.getCardAtPosition(game, currentAction.getX(),
+                                currentAction.getY(), output);
                         break;
                     case "getFrozenCardsOnTable":
                         CommandsParser.getFrozenCardsOnTable(game, output);
@@ -136,18 +157,21 @@ public class MainGame {
                         break;
                     case "cardUsesAbility":
                         if (!game.isGameEnded()) {
-                            CommandsParser.cardUsesAbility(game, currentAction.getCardAttacker(),
+                            CommandsParser.cardUsesAbility(game,
+                                    currentAction.getCardAttacker(),
                                     currentAction.getCardAttacked(), output);
                         }
                         break;
                     case "useAttackHero":
                         if (!game.isGameEnded()) {
-                            CommandsParser.useAttackHero(game, currentAction.getCardAttacker(), output);
+                            CommandsParser.useAttackHero(game,
+                                    currentAction.getCardAttacker(), output);
                         }
                         break;
                     case "useHeroAbility":
                         if (!game.isGameEnded()) {
-                            CommandsParser.useHeroAbility(game, currentAction.getAffectedRow(), output);
+                            CommandsParser.useHeroAbility(game,
+                                    currentAction.getAffectedRow(), output);
                         }
                         break;
                     case "getPlayerOneWins":
@@ -158,6 +182,8 @@ public class MainGame {
                         break;
                     case "getTotalGamesPlayed":
                         CommandsParser.getTotalGamesPlayed(output);
+                        break;
+                    default:
                         break;
                 }
             }

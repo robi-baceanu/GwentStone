@@ -8,21 +8,34 @@ import implementation.Minion;
 
 import java.util.ArrayList;
 
-public class TheCursedOne extends AbilityMinion {
-    public TheCursedOne(int mana, int attackDamage, int health, String description, ArrayList<String> colors, String name) {
+/**
+ * Minion card that can use an ability.
+ *
+ * @author wh1ter0se
+ */
+public final class TheCursedOne extends AbilityMinion {
+    public TheCursedOne(final int mana, final int attackDamage, final int health,
+                        final String description, final ArrayList<String> colors,
+                        final String name) {
+        super();
         this.setMana(mana);
         this.setAttackDamage(attackDamage);
         this.setHealth(health);
         this.setDescription(description);
         this.setColors(colors);
         this.setName(name);
-        this.setTank(false);
-        this.setFrozen(false);
-        this.setHasAttacked(false);
     }
 
-    public void useMinionAbility(Game game, Coordinates cardAttacked) {
-        Card cardToAlter = game.gameTable[cardAttacked.getX()].get(cardAttacked.getY());
+    /**
+     * <strong>Shapeshift:</strong>
+     * Swaps an opponent minion's health with its attack damage.
+     * If such, health becomes 0, card is removed from the table.
+     *
+     * @param game Current game that is being played.
+     * @param cardAttacked Coordinates of card targeted by the Minion.
+     */
+    public void useMinionAbility(final Game game, final Coordinates cardAttacked) {
+        Card cardToAlter = game.getGameTable(cardAttacked.getX()).get(cardAttacked.getY());
         Minion tempCard = new Minion();
 
         int healthOfCard = ((Minion) cardToAlter).getHealth();
@@ -35,7 +48,7 @@ public class TheCursedOne extends AbilityMinion {
         ((Minion) cardToAlter).setHealth(tempCard.getHealth());
 
         if (((Minion) cardToAlter).getHealth() == 0) {
-            game.gameTable[cardAttacked.getX()].remove(cardToAlter);
+            game.getGameTable(cardAttacked.getX()).remove(cardToAlter);
         }
     }
 }

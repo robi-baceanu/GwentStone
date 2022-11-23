@@ -1,5 +1,12 @@
 package implementation;
 
+/**
+ * Class used for describing 'Minion' type cards,
+ * inherits Card class, is inherited by classes
+ * that describe specific type of Minions.
+ *
+ * @author wh1ter0se
+ */
 public class Minion extends Card {
     private int health;
     private int attackDamage;
@@ -7,43 +14,48 @@ public class Minion extends Card {
     private boolean isFrozen;
     private boolean hasAttacked;
 
-    public int getHealth() {
+    public Minion() {
+        this.isFrozen = false;
+        this.hasAttacked = false;
+    }
+
+    public final int getHealth() {
         return health;
     }
 
-    public void setHealth(int health) {
+    public final void setHealth(final int health) {
         this.health = health;
     }
 
-    public int getAttackDamage() {
+    public final int getAttackDamage() {
         return attackDamage;
     }
 
-    public void setAttackDamage(int attackDamage) {
+    public final void setAttackDamage(final int attackDamage) {
         this.attackDamage = attackDamage;
     }
 
-    public boolean isTank() {
+    public final boolean isTank() {
         return isTank;
     }
 
-    public void setTank(boolean tank) {
+    public final void setTank(final boolean tank) {
         isTank = tank;
     }
 
-    public boolean isFrozen() {
+    public final boolean isFrozen() {
         return isFrozen;
     }
 
-    public void setFrozen(boolean frozen) {
+    public final void setFrozen(final boolean frozen) {
         isFrozen = frozen;
     }
 
-    public boolean hasAttacked() {
+    public final boolean hasAttacked() {
         return hasAttacked;
     }
 
-    public void setHasAttacked(boolean hasAttacked) {
+    public final void setHasAttacked(final boolean hasAttacked) {
         this.hasAttacked = hasAttacked;
     }
 }
