@@ -1,11 +1,14 @@
 package implementation.abilityMinions;
 
 import fileio.Coordinates;
+import implementation.AbilityMinion;
+import implementation.Card;
+import implementation.Game;
 import implementation.Minion;
 
 import java.util.ArrayList;
 
-public class Disciple extends Minion {
+public class Disciple extends AbilityMinion {
     public Disciple(int mana, int attackDamage, int health, String description, ArrayList<String> colors, String name) {
         this.setMana(mana);
         this.setAttackDamage(attackDamage);
@@ -18,5 +21,8 @@ public class Disciple extends Minion {
         this.setHasAttacked(false);
     }
 
-    public void useMinionAbility(Coordinates cardAttacked) {}
+    public void useMinionAbility(Game game, Coordinates cardAttacked) {
+        Card cardToAlter = game.gameTable[cardAttacked.getX()].get(cardAttacked.getY());
+        ((Minion) cardToAlter).setHealth(((Minion) cardToAlter).getHealth() + 2);
+    }
 }

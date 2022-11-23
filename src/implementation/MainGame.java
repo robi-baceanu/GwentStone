@@ -80,6 +80,9 @@ public class MainGame {
                     case "cardUsesAttack" ->
                             CommandsParser.cardUsesAttack(game, currentAction.getCardAttacker(),
                                     currentAction.getCardAttacked(), output);
+                    case "cardUsesAbility" ->
+                            CommandsParser.cardUsesAbility(game, currentAction.getCardAttacker(),
+                                    currentAction.getCardAttacked(), output);
                 }
             }
         }

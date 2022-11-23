@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.Coordinates;
+import implementation.abilityMinions.Disciple;
 import implementation.abilityMinions.Miraj;
+import implementation.abilityMinions.TheCursedOne;
 import implementation.abilityMinions.TheRipper;
 import implementation.environmentCards.HeartHound;
 import implementation.standardMinions.Goliath;
@@ -476,6 +478,74 @@ public class CommandsParser {
             }
 
             ((Minion) cardAttacker).setHasAttacked(true);
+        }
+    }
+
+    public static void cardUsesAbility(Game game, Coordinates attackerCoordinates, Coordinates attackedCoordinates, ArrayNode output) {
+        Card cardAttacker = game.gameTable[attackerCoordinates.getX()].get(attackerCoordinates.getY());
+        Card cardAttacked = game.gameTable[attackedCoordinates.getX()].get(attackedCoordinates.getY());
+
+        ObjectNode nodeAttacker = objectMapper.createObjectNode();
+        nodeAttacker.put("x", attackerCoordinates.getX());
+        nodeAttacker.put("y", attackerCoordinates.getY());
+
+        ObjectNode nodeAttacked = objectMapper.createObjectNode();
+        nodeAttacked.put("x", attackedCoordinates.getX());
+        nodeAttacked.put("y", attackedCoordinates.getY());
+
+        ObjectNode toSend = objectMapper.createObjectNode();
+        toSend.put("command", "cardUsesAbility");
+        toSend.set("cardAttacker", nodeAttacker);
+        toSend.set("cardAttacked", nodeAttacked);
+
+        boolean tankExists = false;
+        int lookForTankRow = attackedCoordinates.getX();
+        if (lookForTankRow == 0) {
+            lookForTankRow = 1;
+        } else if (lookForTankRow == 3) {
+            lookForTankRow = 2;
+        }
+        for (Card card : game.gameTable[lookForTankRow]) {
+            if (((Minion) card).isTank()) {
+                tankExists = true;
+                break;
+            }
+        }
+
+        if (((Minion) cardAttacker).isFrozen()) {
+            toSend.put("error", "Attacker card is frozen.");
+            output.add(toSend);
+        } else if (((Minion) cardAttacker).hasAttacked()) {
+            toSend.put("error", "Attacker card has already attacked this turn.");
+            output.add(toSend);
+        } else if (cardAttacker instanceof Disciple) {
+            if (((attackerCoordinates.getX() == 0 || attackerCoordinates.getX() == 1) &&
+                    (attackedCoordinates.getX() == 2 || attackedCoordinates.getX() == 3)) ||
+                    ((attackerCoordinates.getX() == 2 || attackerCoordinates.getX() == 3) &&
+                    (attackedCoordinates.getX() == 0 || attackedCoordinates.getX() == 1))) {
+                toSend.put("error", "Attacked card does not belong to the current player.");
+                output.add(toSend);
+            } else {
+                ((AbilityMinion) cardAttacker).useMinionAbility(game, attackedCoordinates);
+            }
+        } else if (cardAttacker instanceof TheRipper ||
+                cardAttacker instanceof Miraj ||
+                cardAttacker instanceof TheCursedOne) {
+            if (((attackerCoordinates.getX() == 0 || attackerCoordinates.getX() == 1) &&
+                    (attackedCoordinates.getX() == 0 || attackedCoordinates.getX() == 1)) ||
+                    ((attackerCoordinates.getX() == 2 || attackerCoordinates.getX() == 3) &&
+                    (attackedCoordinates.getX() == 2 || attackedCoordinates.getX() == 3))) {
+                toSend.put("error", "Attacked card does not belong to the enemy.");
+                output.add(toSend);
+            } else if (tankExists && !((Minion) cardAttacked).isTank()) {
+                toSend.put("error", "Attacked card is not of type 'Tank'.");
+                System.out.println(cardAttacked.getName());
+                System.out.println(((Minion) cardAttacked).isTank());
+                output.add(toSend);
+            } else {
+                ((AbilityMinion) cardAttacker).useMinionAbility(game, attackedCoordinates);
+                ((AbilityMinion) cardAttacker).setHasAttacked(true);
+            }
         }
     }
 }
