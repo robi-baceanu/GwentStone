@@ -13,6 +13,8 @@ Once one of the players defeats the enemy Hero, he is crowned victorious, and a 
 The project emphasises basic OOP concepts, while delivering a fun experience. In the following sections, I will describe the project's classes and how they are organized, and also detail the project's flow.
 
 ## Cards and Classes Hierarchy
+  
+![Diagram](Diagram.jpg)
 
 There are three main types of cards:
 - *Minion cards*: They are placed on the board and can attack other minions, the enemy Hero or use abilities.
